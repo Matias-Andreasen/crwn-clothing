@@ -5,8 +5,10 @@ import CustomButton from '../custom-button/custom-button.component'
 import { signInWithGoogle } from '../../firebase/firebase.utils'
 
 const SignIn = () => {
+    const [displayNameText, setDisplayNameText] = useState("");
     const [emailText, setEmailText] = useState("");
     const [passwordText, setPasswordText] = useState("");
+    const [ConfirmPasswordText, setConfirmPasswordText] = useState("");
 
     const handleSubmit = event => {
         event.preventDefault();
