@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
+import { connect } from "react-redux";
 
 import "./App.css";
 import Header from "./components/header/header.component";
@@ -7,9 +8,13 @@ import HomePage from "./pages/home/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import { auth, createUserProfileDocuments } from "./firebase/firebase.utils";
+import { setCurrentUser } from "./redux/user/user.actions";
+
+import { useSelector, useDispatch } from "react-redux";
 
 const App = () => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const dispatch = useDispatch();
+  //const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     // Subscription that keeps track of the user currently logged into this instance through firebase
@@ -19,10 +24,17 @@ const App = () => {
         const userRef = await createUserProfileDocuments(userAuth);
 
         userRef.onSnapshot((snapShot) => {
-          setCurrentUser({ id: snapShot.id, ...snapShot.data() });
+          dispatch({
+            type: "SET_CURRENT_USER",
+            payload: { id: snapShot.id, ...snapShot.data() },
+          });
+          // setCurrentUser({ id: snapShot.id, ...snapShot.data() });
         });
       } else {
-        setCurrentUser(null);
+        dispatch({
+          type: "SET_CURRENT_USER",
+          payload: null,
+        });
       }
     });
 
@@ -34,13 +46,13 @@ const App = () => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+  // useEffect(() => {
+  //   console.log(currentUser);
+  // }, [currentUser]);
 
   return (
     <div>
-      <Header currentUser={currentUser} />
+      <Header />
       <Switch>
         <Route exact path="/" component={HomePage}></Route>
         <Route path="/shop" component={ShopPage}></Route>
