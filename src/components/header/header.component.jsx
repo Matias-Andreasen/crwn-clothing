@@ -2,13 +2,16 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { auth } from "../../firebase/firebase.utils";
 import { ReactComponent as Logo } from "../../assets/crown.svg";
-import { useSelector, useDispatch } from "react-redux";
+import CartIcon from "../cart-icon/cart-icon.component";
+import CartDropdown from "../cart-dropdown/cart-dropdown.component";
+
+import { useSelector } from "react-redux";
 
 import "./header.styles.scss";
 
 const Header = () => {
-  //Getting the currentUser state from the redux store
   const currentUser = useSelector((state) => state.user.currentUser);
+  const cartHidden = useSelector((state) => state.cart.hidden);
 
   return (
     <div className="header">
@@ -31,7 +34,9 @@ const Header = () => {
             SIGN IN
           </Link>
         )}
+        <CartIcon />
       </div>
+      {cartHidden ? <CartDropdown /> : null}
     </div>
   );
 };
