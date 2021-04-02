@@ -6,17 +6,24 @@ import Header from "./components/header/header.component";
 import HomePage from "./pages/home/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
-import { auth } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocuments } from "./firebase/firebase.utils";
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     // Subscription that keeps track of the user currently logged into this instance through firebase
-    var subscription = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
+    var subscription = auth.onAuthStateChanged(async (userAuth) => {
+      // If userAuth is null it means the user signed out
+      if (userAuth) {
+        const userRef = await createUserProfileDocuments(userAuth);
 
-      console.log(currentUser);
+        userRef.onSnapshot((snapShot) => {
+          setCurrentUser({ id: snapShot.id, ...snapShot.data() });
+        });
+      } else {
+        setCurrentUser(null);
+      }
     });
 
     // Equivalent of componentWillUnmount - cleaning up the subscription to prevent memory leaks
@@ -26,6 +33,10 @@ const App = () => {
       subscription = null;
     };
   }, []);
+
+  useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
 
   return (
     <div>
